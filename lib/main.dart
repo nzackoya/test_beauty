@@ -133,14 +133,6 @@ class MyApp extends StatelessWidget {
                           ],
                         );
                 },
-                itemBuilder: (context, Session element) =>
-                    Text(element.customer),
-                // itemComparator: (item1, item2) =>
-                //     item1.date.compareTo(item2.date), // optional
-                // useStickyGroupSeparators: true, // optional
-                // floatingHeader: true, // optional
-                // order: GroupedListOrder.DESC, // optional
-                // footer: Text("Widget at the bottom of list"), // optional
                 sort: false,
               );
             },
