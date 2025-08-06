@@ -61,42 +61,14 @@ class MyApp extends StatelessWidget {
                 elements: elements,
                 groupBy: (element) => formattedDate.format(element.date),
                 groupSeparatorBuilder: (String groupByValue) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      left: 10,
-                      right: 10,
-                      bottom: 3,
-                      top: 12,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Date', style: titleFont),
-                        Text(groupByValue, style: titleFont),
-                      ],
-                    ),
-                  );
+                  return titleWidget(groupByValue);
                 },
                 separator: Divider(height: 1, color: mainColor),
                 groupItemBuilder: (context, session, groupStart, groupEnd) {
-                  final rowItem = Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(groupStart ? 8.0 : 0),
-                        topRight: Radius.circular(groupStart ? 8.0 : 0),
-                        bottomLeft: Radius.circular(groupEnd ? 8.0 : 0),
-                        bottomRight: Radius.circular(groupEnd ? 8.0 : 0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(session.customer, style: customerFont),
-                        Text(session.amount.toString(), style: amountFont),
-                      ],
-                    ),
+                  final rowItem = rowItemWidget(
+                    session: session,
+                    groupStart: groupStart,
+                    groupEnd: groupEnd,
                   );
                   return !groupEnd
                       ? rowItem
@@ -104,31 +76,9 @@ class MyApp extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             rowItem,
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Total', style: totalFont),
-                                  Text(
-                                    elements
-                                        .where(
-                                          (val) => val.date == session.date,
-                                        )
-                                        .fold<int>(
-                                          0,
-                                          (initial, current) =>
-                                              initial + current.amount,
-                                        )
-                                        .toString(),
-                                    style: totalFont,
-                                  ),
-                                ],
-                              ),
+                            totalRowWidget(
+                              elements: elements,
+                              session: session,
                             ),
                           ],
                         );
@@ -138,6 +88,67 @@ class MyApp extends StatelessWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget titleWidget(String groupByValue) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10, bottom: 3, top: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Date', style: titleFont),
+          Text(groupByValue, style: titleFont),
+        ],
+      ),
+    );
+  }
+
+  Widget rowItemWidget({
+    required Session session,
+    required bool groupStart,
+    required bool groupEnd,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(groupStart ? 8.0 : 0),
+          topRight: Radius.circular(groupStart ? 8.0 : 0),
+          bottomLeft: Radius.circular(groupEnd ? 8.0 : 0),
+          bottomRight: Radius.circular(groupEnd ? 8.0 : 0),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(session.customer, style: customerFont),
+          Text(session.amount.toString(), style: amountFont),
+        ],
+      ),
+    );
+  }
+
+  Widget totalRowWidget({
+    required List<Session> elements,
+    required Session session,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Total', style: totalFont),
+          Text(
+            elements
+                .where((val) => val.date == session.date)
+                .fold<int>(0, (initial, current) => initial + current.amount)
+                .toString(),
+            style: totalFont,
+          ),
+        ],
       ),
     );
   }
