@@ -56,6 +56,10 @@ class MyApp extends StatelessWidget {
             future: SessionRepository().fetch(),
             builder: (context, snapshot) {
               final elements = snapshot.data ?? [];
+
+              if (elements.isEmpty) {
+                return Center(child: CircularProgressIndicator());
+              }
               return GroupedListView<Session, String>(
                 padding: EdgeInsets.all(10),
                 elements: elements,
